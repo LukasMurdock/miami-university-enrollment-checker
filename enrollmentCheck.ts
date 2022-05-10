@@ -2,27 +2,36 @@
 import { parse } from 'https://deno.land/std@0.138.0/flags/mod.ts';
 
 // ******************************** In-file Configuration
-let coursesToCheck: string[] = []; // e.g., ['PSY 210', 'AAA 294']
-let term = ''; // e.g., 'Fall 2022-23'
+let coursesToCheck: string[] = []; // ['CSE 252', 'CSE 271']
+let term = ''; // 'Fall 2022-23'
 // ******************************** In-file Configuration
 
 // Script Arguments
-// -t 'Fall 2022-23' 'PSY 210' 'AAA 294'
+// -t 'Fall 2022-23' 'CSE 252' 'CSE 271'
 const args = parse(Deno.args);
 
 // Use in-file configuration, if set
+if (term.length === 0) {
+    if (args.t) {
+        term = args.t;
+    } else {
+        console.log(
+            "To configure a term, write `-t 'Fall 2022-23'` to the end of your command"
+        );
+        throw new Error('No term configured');
+    }
+}
 term = term.length > 0 ? term : args.t;
 coursesToCheck =
     coursesToCheck.length > 0 ? coursesToCheck : (args._ as string[]);
-
-if (term.length < 4) {
-    throw new Error('No term configured');
-}
 
 if (coursesToCheck.length < 1) {
     console.log(args._);
     console.log(coursesToCheck);
     console.log(parseCourseParameters(args._));
+    console.log(
+        'To configure courses, write `CSE 252` to the end of your command'
+    );
     throw new Error('No courses configured');
 }
 
